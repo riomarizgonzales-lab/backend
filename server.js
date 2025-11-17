@@ -1,3 +1,4 @@
+
 // server.js
 require('dotenv').config();
 const express = require('express');
@@ -99,8 +100,13 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Products
 app.get('/api/products', async (req, res) => {
-  const products = await Product.find().sort({ createdAt: -1 });
-  res.json(products);
+  try {
+    const products = await Product.find().sort({ createdAt: -1 }).lean();
+    res.json(products);
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).json({ message: 'Failed to fetch products', error: err.message });
+  }
 });
 
 app.get('/api/products/:id', async (req, res) => {
